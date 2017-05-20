@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html  lang="en">
+    <head>
+        <title>Bootstrape Table</title>
+        <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <script type="text/javascript">
+                (function()
+                    {
+                    /*create an object named Applicant that has all the form fields as member variables*/
+                    var Applicant = {
+                        frstname: "",
+                        lstname: "",
+                        emailadrs: "",
+                        phoneno: ""
+                    };
+
+                    /*create an object storageLogic which has a saveItem member function and loadData member function*/
+                    var storageLogic = {
+
+                        /*saveItem is a function which populates the user inputs in the form to the javascript Applicant object*/
+                        saveItem: function (){
+                            var lscount = localStorage.length;
+                            var inputs = document.getElementsByClassName("form-control");
+                            Applicant.frstname = inputs[0].value; //first input element of form is populated to fname member of Applicant object  
+                            Applicant.lstname = inputs[1].value; // second input element of form is populated to lname member of Applicant object
+                            Applicant.emailadrs = inputs[2].value; //.. and so on
+                            Applicant.phoneno = inputs[3].value;
+                            
+                            //storing the Applicant object to localStorage
+                            localStorage.setItem("Applicant_" + lscount, JSON.stringify(Applicant));  //first entered form data is stored to localStorage item Applicant_1 etc.
+                            //page refreshed
+                            location.reload();
+
+                        },
+
+                        /*loadData is a function which loads the values from localStorage ,if any, and renders it into the bootstrap table*/
+                        loaddata: function() {
+                            //get length of localStorage. The number of Applicant objects in localStorage
+                            var datacount = localStorage.length;
+                            if (datacount > 0)
+                            {
+                                //if localStorage has any elements then create a bootstrap table in dvContainer
+                                //In a string called 'render', we will constitute the HTML for rendering the bootstrap tble with the table data having the values stored in Applicant object- retrieved from localStorage
+                                var render = "<table class='table table-bordered'>"; //bordered table in bootstrap
+                                render += "<tr><th>S.No.</th><th>First Name</th><th>Last Name</th>" + 
+                                "<th>Email address</th><th>Phone Number</th>";
+                                for (i=0; i < datacount; i++) { //for each Applicant object do
+                                    var key = localStorage.key(i); // JSON stores as key-item pairs e.g. of key is 'fname','lname','age' etc
+                                    var applicant = localStorage.getItem(key); //this will get the value of the item i.e. actual values input by user in the form
+                                    var data = JSON.parse(applicant); //parse JSON data to retrieve the data elements
+                                    render+="<tr><td>"+Number(i+1)+"</td>";
+                                    render += "<td>" + data.frstname + "</td>";
+                                    render += "<td>" + data.lstname + "</td>";
+                                    render += "<td>" + data.emailadrs + "</td>";
+                                    render += "<td>" + data.phoneno + "</td>";
+                                }
+                                render += "</table>";
+                                var newTable = document.getElementById("dvContainer");
+                                newTable.innerHTML = render;
+                            }
+                        }
+                    };
+                    window.onload = function() {
+                        storageLogic.loaddata(); //at first, loading the existing data in localStorage to the front end table 
+                        var btnsubmit = document.getElementById('btnsubmit');
+                        btnsubmit.addEventListener('click', storageLogic.saveItem);// attaching the saveItem function to the Submit button. Onclick of Submit, saveItem() is executed
+                    };
+        })();
+    </script>
+    </head>
+    <body>
+        <div class="container">
+            <!--Here we are creating registration form using form-element-->
+            <div class="row">
+                <div class="col-xs-12" style="background-color:#f0f0f0">
+                    <form role="form">
+                        <div class="form-group">
+                            <lable for="frstname"><span class="glyphicon glyphicon-user"></span> First Name</lable>
+                            <input type="text" class="form-control" id="frstname" placeholder="First Name">
+                        </div>
+                        <div class="form-group">
+                            <lable for="lstname"><span class="glyphicon glyphicon-user"></span> Last Name</lable>
+                            <input type="text" class="form-control" id="lstname" placeholder="Last Name">
+                        </div>
+                        <div class="form-group">
+                            <lable for="emailadrs"><span class="glyphicon glyphicon-envelope"></span> Email address</lable>
+                            <input type ="email" class="form-control" id="emailadrs" placeholder="Email address">
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneno"><span class="glyphicon glyphicon-phone-alt"></span> Phone Number</label>
+                            <input type="text" class="form-control" id="phoneno" placeholder="Phone Number">
+                        </div>
+                        <div class="form-group">
+                            <button id="btnsubmit" type="button" class="btn btn-success">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="dvContainer" class="container">
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+    </body>
+</html>
